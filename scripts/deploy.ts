@@ -1,9 +1,11 @@
-import { ethers } from "hardhat";
+import hre, { ethers } from "hardhat";
 import { setBalance } from "@nomicfoundation/hardhat-network-helpers";
 import path from "path";
 import fs from "fs";
 
 import { saveFrontendFiles, saveTypesToFrontend } from "./saveFrontendFiles";
+
+const network = hre.network.name;
 
 export function getContractsNames() {
   const contracts = fs.readdirSync(path.join(__dirname, "..", "contracts"));
@@ -33,7 +35,9 @@ async function main() {
     const Contract = await ethers.getContractFactory(contract);
     const contractInstance = await Contract.deploy(10000);
     await contractInstance.deployed();
-    console.log(`${contract} deployed to: ${contractInstance.address}`);
+    console.log(
+      `${contract} deployed to: ${contractInstance.address} on ${network}`
+    );
     /*
     Move contract abi and deployed contract address to the frontend directory 
     */
@@ -48,15 +52,17 @@ async function main() {
   /*
   This add 1 ETH to your .env set up public wallet address 
   */
-  const ETHAmount = 10n ** 18n;
-  await setBalance(userAddress, ETHAmount);
+  if (network === "localhost") {
+    const ETHAmount = 10n ** 18n;
+    await setBalance(userAddress, ETHAmount);
 
-  console.log(`\n${ETHAmount} Gwei assigned to ${userAddress}\n`);
+    console.log(`\n${ETHAmount} Gwei assigned to ${userAddress}\n`);
+  }
 }
 
 main()
   .then(() => {
-    console.log("Deployed successfully\n");
+    console.log("\nDeployed successfully\n");
     process.exit(0);
   })
   .catch((error) => {

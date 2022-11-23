@@ -6,9 +6,9 @@
   "scripts": {
     "chain": "npx hardhat node",
     "deploy-local": "npx hardhat run scripts/deploy.ts --network localhost && npx hardhat typechain",
-    "deploy-goerli": "hardhat run scripts/deploy.ts --network goerli",
-    "deploy-polygon": "hardhat run scripts/deploy.ts --network matic",
-    "deploy-mainnet": "hardhat run scripts/deploy.ts --network mainnet",
+    "deploy-goerli": "hardhat run scripts/deploy.ts --network goerli && npx hardhat typechain",
+    "deploy-polygon": "hardhat run scripts/deploy.ts --network matic && npx hardhat typechain",
+    "deploy-mainnet": "hardhat run scripts/deploy.ts --network mainnet && npx hardhat typechain",
     "test": "npx hardhat test"
   },
   "license": "ISC",

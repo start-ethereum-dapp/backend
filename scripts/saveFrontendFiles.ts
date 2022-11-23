@@ -11,7 +11,7 @@ const frontendContractDir = path.join(
   "contracts"
 );
 
-const typechainDir = path.join(__dirname, "..", "typechain-types");
+const typechainDir = path.join(__dirname, "..", "typechain-types", "contracts");
 
 export function saveFrontendFiles(contract: string, contractInstance: any) {
   fs.rmSync(frontendContractDir, { recursive: true, force: true });
@@ -47,7 +47,7 @@ export const saveTypesToFrontend = () => {
     fse.copySync(typechainDir, contractTypesDir, {
       overwrite: true,
     });
-    console.log("Contract types generated on: /frontend/contracts/types/");
+    console.log("\nContract types generated on: /frontend/contracts/types/\n");
   } catch (error) {
     console.log(
       "Cannot generated types for the contract. You can found them on /backend/typechain-types/"
