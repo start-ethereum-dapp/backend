@@ -6,20 +6,28 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract StarkToken is ERC20, ERC20Burnable, Ownable {
     error LimitReached(string messagge);
+    error AmountExceded(string message);
 
-    constructor(uint256 initialSupply) ERC20("StarkToken", "STARK") {
-        _mint(msg.sender, initialSupply);
+    uint256 public maxSupply;
+    uint8 public constant limitPeerAccount = 10;
+
+    constructor(uint256 _maxSupply) ERC20("StarkToken", "STARK") {
+        maxSupply = _maxSupply;
     }
 
-    function mint(address to, uint256 amount) public payable {
-        uint256 balanceBefore = balanceOf(to);
-        require(
-            msg.value == 500000000000000 * amount,
-            "You need to send 0.0005 ETH (500000000000000 Wei) to mint each Stark Token."
-        );
-        if (balanceBefore >= 10) {
-            revert LimitReached("You have reached the max of tokens owned.");
+    function mint(uint256 amount) public {
+        if (totalSupply() >= maxSupply) {
+            revert LimitReached("The max supply was reached");
         }
-        _mint(to, amount);
+
+        if (amount > 1) {
+            revert AmountExceded("You cannot mint more than 1 token at once");
+        }
+
+        if (balanceOf(msg.sender) < limitPeerAccount) {
+            _mint(msg.sender, amount);
+            return;
+        }
+        revert LimitReached("You have reached the max of tokens owned.");
     }
 }

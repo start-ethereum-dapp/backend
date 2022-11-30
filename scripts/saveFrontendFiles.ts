@@ -47,7 +47,7 @@ export const saveTypesToFrontend = () => {
     fse.copySync(typechainDir, contractTypesDir, {
       overwrite: true,
     });
-    console.log("\nContract types generated on: /frontend/contracts/types/\n");
+    console.log("\nContract types generated on: /frontend/contracts/types/");
   } catch (error) {
     console.log(
       "Cannot generated types for the contract. You can found them on /backend/typechain-types/"

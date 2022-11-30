@@ -2,6 +2,7 @@ import hre, { ethers } from "hardhat";
 import { setBalance } from "@nomicfoundation/hardhat-network-helpers";
 import path from "path";
 import fs from "fs";
+import colors from "colors/safe";
 
 import { saveFrontendFiles, saveTypesToFrontend } from "./saveFrontendFiles";
 
@@ -23,20 +24,21 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   const deployerAddress = deployer.address;
 
-  console.log(`\nDeploying contract(s) with the account: ${deployerAddress}\n`);
+  console.log(`\nDeploying contract(s) with the account: ${deployerAddress}`);
 
-  console.log(
-    `\nAccount balance: ${(await deployer.getBalance()).toString()}\n`
-  );
+  console.log(`\nAccount balance: ${(await deployer.getBalance()).toString()}`);
 
   const contracts = getContractsNames();
 
+  let contractInstance;
   for (const contract of contracts) {
     const Contract = await ethers.getContractFactory(contract);
-    const contractInstance = await Contract.deploy(10000);
-    await contractInstance.deployed();
+    contractInstance = await Contract.deploy(1000);
+    contractInstance.deployed();
     console.log(
-      `${contract} deployed to: ${contractInstance.address} on ${network}`
+      `\n${contract} deployed to: ${colors.green(
+        contractInstance.address
+      )} on ${network}`
     );
     /*
     Move contract abi and deployed contract address to the frontend directory 
@@ -52,17 +54,31 @@ async function main() {
   /*
   This add 1 ETH to your .env set up public wallet address 
   */
-  if (network === "localhost") {
-    const ETHAmount = 10n ** 18n;
-    await setBalance(userAddress, ETHAmount);
+  switch (network) {
+    case "localhost":
+      const ETHAmount = 10n ** 18n;
+      await setBalance(userAddress, ETHAmount);
 
-    console.log(`\n${ETHAmount} Gwei assigned to ${userAddress}\n`);
+      console.log(`\n${ETHAmount} Gwei assigned to ${userAddress}`);
+      break;
+    case "goerli":
+      if (contractInstance?.address) {
+        console.log(
+          `\nSee the contract on ${colors.green(
+            `https://goerli.etherscan.io/address/${contractInstance.address}`
+          )}`
+        );
+      }
+      break;
+
+    default:
+      break;
   }
 }
 
 main()
   .then(() => {
-    console.log("\nDeployed successfully\n");
+    console.log("\nDeployed successfully");
     process.exit(0);
   })
   .catch((error) => {
